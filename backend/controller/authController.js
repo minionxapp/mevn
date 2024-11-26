@@ -47,9 +47,27 @@ export const RegisterUser =asynchHandler (async (req, res) => {
     // }
 })
 
-export const LoginUser = (req, res) => {
-    res.send('Login Berhasl')
-}
+export const LoginUser = asynchHandler(async (req, res) => {
+    //validasi email dan password kosong
+    if(!req.body.email && !req.body.password){
+        res.status(400)
+        throw new Error("Input email dan password tidak boleh kosong")
+    }
+
+    //cek email terdaftar atau tidak
+    const userData = await User.findOne({
+        email : req.body.email
+    })
+
+    if(userData && (await userData.comparePassword(req.body.password))){
+        // res.send("email terdaftar")
+        cretaeSendToken(userData,200,res)
+    }else{
+        res.status(400)
+        throw new Error("Invalid User")
+    }
+
+})
 
 export const LogoutUser = (req, res) => {
     res.send('Logout Berhasl')
