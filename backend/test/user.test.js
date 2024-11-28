@@ -2,7 +2,7 @@ import supertest from "supertest";
 import { app } from "../app.js";
 import User from "../models/User.js";
 // import { decode } from "jsonwebtoken";
-import jwt from 'jsonwebtoken'
+// import jwt from 'jsonwebtoken'
 // import app from '../app';
 // import mongoose from 'mongoose'
 
@@ -81,15 +81,11 @@ describe("Test User.................", () => {
     });
 
 
-    // console.log("===getUser resultLogin===========")
-    // console.log((resultLogin.header['set-cookie'][0]).split('; ')[0])
-    let cookiezonk=''
+    
     let cookies = ((resultLogin.header['set-cookie'][0]).split('; ')[0])
     const result = await supertest(app).get("/api/v1/auth/getUser")
-    .set( {'Cookie':cookies});
-    // .set( {'Cookie':cookiezonk});
+    .set( {'Cookie':cookies});//set ke headers
 
-    // console.log("kkkkkkkkkkkkkk : "+JSON.stringify(result.text))
     console.log(JSON.stringify(result.text))
     expect(result.status).toBe(200);
   });
