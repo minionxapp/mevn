@@ -1,0 +1,13 @@
+ npm install primevue @primevue/themes
+
+ // app.use(PrimeVue)
+app.use(PrimeVue, {
+    theme: {
+        preset: Aura
+    }
+});
+
+npm install primeicons
+npm install primeflex
+
+import primeflex/primeflex.css

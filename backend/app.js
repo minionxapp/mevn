@@ -37,7 +37,7 @@ app.use(errorHandler)
 
 
 app.listen(port, () => {
-  console.log(`aplikasi jalanxxx di port port ${port}`)
+  console.log(`aplikasi jalanxxxz di port port ${port}`)
 })
 
 // connection db

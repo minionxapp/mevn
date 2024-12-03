@@ -19,7 +19,7 @@ export const authMiddleware =async(req,res,next) =>{
     } catch (error) {
         return next(
             res.status(401).json({
-                message :"Token tidak ada"
+                message :"Token invalid"
             })
         )
     }
@@ -28,7 +28,7 @@ export const authMiddleware =async(req,res,next) =>{
     if(!currenUser){
         return next(
             res.status(401).json({
-                message :"ToUser tidak ditemukan"
+                message :"User tidak ditemukan"
             })
         )
     }
@@ -37,4 +37,17 @@ export const authMiddleware =async(req,res,next) =>{
 
     next()
 
+}
+
+export const permissionUser =(...roles)=>{
+    return (req, res, next)=>{
+        //["admin","user","kasir"]
+
+        if(!roles.includes(req.user.role)){
+            return next(res.status(403).json({
+                message: "role anda tidak bisa mengakase halaman"
+            }))
+        }
+        next()
+    }
 }

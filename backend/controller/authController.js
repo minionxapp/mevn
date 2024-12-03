@@ -81,13 +81,11 @@ export const LogoutUser = (req, res) => {
     })
 }
 
-export const getUser = async (req, res) => {
-    // res.send('GetUser Berhasl')
+export const getUser = async (req, res) => {   
     const user = await User.findById(req.user.id).select({passwor : 0})
-
     if(user){
         return res.status(200).json({
-            user
+            data : user
         })
     }
 

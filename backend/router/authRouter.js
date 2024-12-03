@@ -1,6 +1,6 @@
 import express from 'express'
 import {RegisterUser,LoginUser,LogoutUser,getUser} from '../controller/authController.js'
-import  {authMiddleware} from '../middleware/authMiddleware.js'
+import  {authMiddleware, permissionUser} from '../middleware/authMiddleware.js'
 const router = express.Router()
 //post /api/v1/auth/register
 router.post('/register',RegisterUser)
@@ -10,5 +10,11 @@ router.post('/login',LoginUser)
 router.get('/logout',LogoutUser)
 //get /api/v1/auth/getUser
 router.get('/getUser',authMiddleware,getUser)
+
+// get/api/v1/auth/test
+router.get('/testrole',authMiddleware,permissionUser("admin"),(req,res)=>{
+    res.send("berhasil")
+    
+})
 
 export default router
