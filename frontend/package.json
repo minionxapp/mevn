@@ -9,11 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@primevue/themes": "^4.2.4",
     "axios": "^1.7.7",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
-    "primevue": "^4.2.4",
+    "primevue": "^3.53.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },
