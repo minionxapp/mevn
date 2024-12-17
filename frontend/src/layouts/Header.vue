@@ -2,11 +2,11 @@
     <div>
         <Menubar class="bg-blue-300" :model="items">
             <template #end>
-                <Button label="Login" icon="pi pi-user" @click="visible = true" />
+                <Button label="Login" icon="pi pi-user" @click="dialog = true" />
             </template>
         </Menubar>        
     </div>
-    <FormAuthDialog  v-model:visible = "visible" />
+    <FormAuthDialog  v-model:visible = "dialog" />
     
 </template>
  
@@ -14,10 +14,15 @@
 import Menubar from "primevue/menubar";
 import { ref } from "vue";
 import FormAuthDialog from "@/components/FormAuthDialog.vue";
+import { useAuthStore } from "@/stores/authStores";
+import { storeToRefs } from "pinia";
 
+const authStores=useAuthStore()
 
+//state pinia
+const {dialog} =storeToRefs(authStores);
 //state
-const visible = ref(false)
+//const visible = ref(false)
 
 const items = ref([
     {

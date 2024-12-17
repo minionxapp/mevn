@@ -14,7 +14,7 @@ export const app = express()
 const port = 3000
 
 //middleware
-app.use(cors())
+// app.use(cors())
 //setup untuk express
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -24,7 +24,7 @@ if(process.env.NODE_Env ==='development'){
 }
 
 //end poin
-app.get('/', (req, res) => {
+app.get('/api/v1/test', (req, res) => {
   res.status(200).json({
     message :"Message dari end pont"
   })

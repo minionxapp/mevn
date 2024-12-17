@@ -1,11 +1,12 @@
 <template>
-    <Dialog v-model:visible="visible" modal :pt="{
+    <Dialog  modal :pt="{
         root: 'border-none',
         mask: {
             style: 'backdrop-filter: blur(2px)'
         }
     }">
         <template #container="{ closeCallback }">
+        <form @submit.prevent="handleSubmit">
             <div class="flex flex-column px-5 py-5 gap-4"
                 style="border-radius: 12px; background-image: radial-gradient(circle at left top, var(--primary-400), var(--primary-700))">
                 <svg width="35" height="40" viewBox="0 0 35 40" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -18,22 +19,47 @@
                         fill="var(--primary-200)" />
                 </svg>
                 <div class="inline-flex flex-column gap-2">
-                    <label for="username" class="text-primary-50 font-semibold">Username</label>
-                    <InputText id="username" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem">
+                   <AlertMessage  v-if="autStores.errorAlert" :message ="autStores.errorMsg"/>
+                    <label for="email" class="text-primary-50 font-semibold">Username</label>
+                    <InputText id="email"  type="email" v-model="userInput.email" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem">
                     </InputText>
                 </div>
                 <div class="inline-flex flex-column gap-2">
                     <label for="password" class="text-primary-50 font-semibold">Password</label>
-                    <InputText id="password" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem"
+                    <InputText id="password" 
+                    v-model="userInput.password" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem"
                         type="password"></InputText>
                 </div>
                 <div class="flex align-items-center gap-3">
-                    <Button label="Cancel" @click="closeCallback" text
+                    <Button label="Cancel" type="submit" text
                         class="p-3 w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"></Button>
-                    <Button label="Sign-In" @click="closeCallback" text
+                    <Button label="Sign-In" 
+                    type="submit" text
                         class="p-3 w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"></Button>
                 </div>
             </div>
+        </form>
         </template>
     </Dialog>
 </template>
+
+<script setup>
+import { reactive } from 'vue';
+import { useAuthStore } from '@/stores/authStores';
+import AlertMessage from './AlertMessage.vue';
+
+const autStores = useAuthStore();
+
+const {LoginUser} = autStores
+//state
+const userInput = reactive({
+    email:"",
+    password :""
+})
+
+const handleSubmit = () => {
+    console.log("Click")
+    LoginUser(userInput)
+}
+
+</script>
