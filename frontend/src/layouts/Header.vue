@@ -2,7 +2,13 @@
     <div>
         <Menubar class="bg-blue-300" :model="items">
             <template #end>
-                <Button label="Login" icon="pi pi-user" @click="dialog = true" />
+                <Button label="Login"  v-if="!authStores.currentUser" icon="pi pi-user" @click="dialog = true" />
+                <div v-else>
+                    <Button label="Dashboard" icon="pi pi-home" ></Button>
+                    <Button label="Logout" class="ml-3" 
+                    severity="danger"  @click="LogoutUser"></Button>
+
+                </div>
             </template>
         </Menubar>        
     </div>
@@ -18,6 +24,9 @@ import { useAuthStore } from "@/stores/authStores";
 import { storeToRefs } from "pinia";
 
 const authStores=useAuthStore()
+
+//action
+const {LogoutUser} = useAuthStore();
 
 //state pinia
 const {dialog} =storeToRefs(authStores);

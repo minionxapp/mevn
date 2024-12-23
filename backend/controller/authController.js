@@ -85,7 +85,7 @@ export const getUser = async (req, res) => {
     const user = await User.findById(req.user.id).select({passwor : 0})
     if(user){
         return res.status(200).json({
-            data : user
+            user : user
         })
     }
 
