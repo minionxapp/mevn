@@ -4,7 +4,7 @@ import router from './router'
 
 //prie
 import PrimeVue from 'primevue/config';
-import 'primevue/resources/themes/aura-light-blue/theme.css'
+import 'primevue/resources/themes/aura-light-green/theme.css'
 import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
 import InputText from 'primevue/inputtext'
@@ -26,7 +26,7 @@ app.use(router)
 app.use(pinia)
 
 pinia.use(({store})=>{
-    store.router = markRaw(router)
+    store.ro
 })
 
 app.component('InputText',InputText)

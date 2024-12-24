@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('user', () => {
             currentUser.value = data.data
             localStorage.setItem("user",JSON.stringify(data.data))
             dialog.value =false
-            console.log(data)
+            // console.log(data)
             router.push({name:'Dashboard'})
 
         } catch (error) {
@@ -31,8 +31,6 @@ export const useAuthStore = defineStore('user', () => {
             errorMsg.value = error.response.data.message
             console.log(error.response.data.message)
         }
-
-
     }
     const LogoutUser = async()=>{
         try {
@@ -44,5 +42,27 @@ export const useAuthStore = defineStore('user', () => {
             console.log(error)
         }
     }
-    return { dialog, LoginUser, errorAlert, errorMsg,currentUser,LogoutUser }
+    const RegisterUser = async(inputData)=>{
+        try {
+            const { data } = await custumFetch.post('/auth/register', {
+                email: inputData.email,
+                password: inputData.password,
+                name: inputData.name
+            })
+            currentUser.value = data.data
+            localStorage.setItem("user",JSON.stringify(data.data))
+            dialog.value =false
+            // console.log(data)
+            router.push({name:'Dashboard'})
+
+        } catch (error) {
+            console.log(error)
+            errorAlert.value = true
+            errorMsg.value = error.response.data.message
+        }
+
+    }
+
+
+    return { dialog, LoginUser, errorAlert, errorMsg,currentUser,LogoutUser,RegisterUser }
 })

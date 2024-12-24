@@ -14,6 +14,7 @@ const user = ref(null)
 const getUser = async()=>{
     const {data} = await custumFetch.get('/auth/getuser')
     user.value = data.user
+    console.log(data)
 }
 
 onMounted(()=>{

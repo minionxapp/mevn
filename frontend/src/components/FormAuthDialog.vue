@@ -18,9 +18,17 @@
                         d="M30.69 4.21L24.37 4.81L22.57 0.69L22.86 0H26.48L30.69 4.21ZM23.75 5.67L22.66 3.08L18.05 14.24V17.14H19.7H20.03H20.16H20.2L24.1 15.7L30.11 5.19L23.75 5.67ZM4.21002 4.21L10.53 4.81L12.33 0.69L12.05 0H8.43002L4.22002 4.21H4.21002ZM21.9 17.4L20.6 18.2H14.3L13 17.4L12.4 18.2L12.42 18.23L17.45 26.8L22.48 18.23L22.5 18.2L21.9 17.4ZM4.79002 5.19L10.8 15.7L14.7 17.14H14.74H15.2H16.85V14.24L12.24 3.09L11.15 5.68L4.79002 5.2V5.19Z"
                         fill="var(--primary-200)" />
                 </svg>
+                <div class="block mx-auto text-white">
+                    <h1>LOGO</h1>
+                </div>
+                <AlertMessage  v-if="autStores.errorAlert" :message ="autStores.errorMsg"/>
+                <div class="inline-flex flex-column gap-2" v-if="!isLogin">
+                    <label for="name" class="text-primary-50 font-semibold">Username</label>
+                    <InputText id="name"  type="text" v-model="userInput.name" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem">
+                    </InputText>
+                </div>
                 <div class="inline-flex flex-column gap-2">
-                   <AlertMessage  v-if="autStores.errorAlert" :message ="autStores.errorMsg"/>
-                    <label for="email" class="text-primary-50 font-semibold">Username</label>
+                    <label for="email" class="text-primary-50 font-semibold">Email</label>
                     <InputText id="email"  type="email" v-model="userInput.email" class="bg-white-alpha-20 border-none p-3 text-primary-50 w-20rem">
                     </InputText>
                 </div>
@@ -33,9 +41,19 @@
                 <div class="flex align-items-center gap-3">
                     <Button label="Cancel" type="submit" text
                         class="p-3 w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"></Button>
-                    <Button label="Sign-In" 
+                    <Button :label="isLogin ? 'Login' : 'Register'" 
                     type="submit" text
                         class="p-3 w-full text-primary-50 border-1 border-white-alpha-30 hover:bg-white-alpha-10"></Button>
+                </div>
+                <div style=" width: 300px;" class="text-white" >
+                    <p v-if ="isLogin">
+                        Belum punya akun? silahkan daftar
+                        <span @click="isLogin = false" class="cursor-pointer my-2 text-green-400">Register</span>
+                    </p>
+                    <p v-else>
+                        Sudh punya akun? silahkan login
+                        <span @click="isLogin = true" class="cursor-pointer my-2 text-green-400">Login</span>
+                    </p>
                 </div>
             </div>
         </form>
@@ -44,22 +62,35 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive,ref } from 'vue';
 import { useAuthStore } from '@/stores/authStores';
 import AlertMessage from './AlertMessage.vue';
 
 const autStores = useAuthStore();
 
-const {LoginUser} = autStores
+const {LoginUser,RegisterUser} = autStores
 //state
 const userInput = reactive({
+    name :"",
     email:"",
     password :""
 })
 
+const clearInput =()=>{
+    userInput.name="",
+    userInput.email="",
+    userInput.password=""
+}
+
+const isLogin = ref(true)
 const handleSubmit = () => {
-    console.log("Click")
-    LoginUser(userInput)
+    if(isLogin.value==true){
+        LoginUser(userInput)
+        console.log("Click")
+    }else{
+        RegisterUser(userInput)
+        clearInput()
+    }
 }
 
 </script>
