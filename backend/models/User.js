@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
         required :true,
         unique:[true,"user name sudah digunakan"]
     },
-    email :{
+    email:{
         type:String,
         required :true,
         unique:[true,"email sudah digunakan"],
@@ -23,10 +23,10 @@ const userSchema = new mongoose.Schema({
         minLength :6
 
     },
-    role :{
+    role:{
         type :String,
         enum:["user","admin"],
-        default :"user"
+        default:"user"
     }
 })
 

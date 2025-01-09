@@ -26,25 +26,13 @@ const cretaeSendToken =(user,statusCode,res) =>{
 }
 
 export const RegisterUser =asynchHandler (async (req, res) => {
-    // console.log("disini........................................"+JSON.stringify(req.body))
-    // try { //pake asyncHanlder try catch di hapus
         const createUser = await User.create({
             name : req.body.name,
             email : req.body.email,
             password : req.body.password,
+            role : req.body.role
         })
-        // return res.status(200).json({
-        //     message:"Register Berhasil",
-        //     data :createUser
-        // })//ganti
         cretaeSendToken(createUser,201,res)
-    // } catch (error) {
-    //     console.log(error)
-    //     return res.status(400).json({
-    //         message :"Error",
-    //         error
-    //     })        
-    // }
 })
 
 export const LoginUser = asynchHandler(async (req, res) => {
@@ -60,7 +48,6 @@ export const LoginUser = asynchHandler(async (req, res) => {
     })
 
     if(userData && (await userData.comparePassword(req.body.password))){
-        // res.send("email terdaftar")
         cretaeSendToken(userData,200,res)
     }else{
         res.status(400)
@@ -70,7 +57,6 @@ export const LoginUser = asynchHandler(async (req, res) => {
 })
 
 export const LogoutUser = (req, res) => {
-    // res.send('Logout Berhasl')
     res.cookie('jwt','',{
         expire :new Date(0),
         httpOnly : true,

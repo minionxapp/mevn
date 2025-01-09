@@ -1,114 +1,109 @@
-import supertest from "supertest";
 import { app } from "../app.js";
+import supertest from "supertest";
 import User from "../models/User.js";
 // import fs from fs
 
-import { getCookie, getCookieAdmin,createUserLogin,getCookieByUserLogin } from "./util.testing.js";
-// import { isJSON } from "validator";
+import { getCookie, getCookieAdmin, createUserLogin, getCookieByUserLogin,deleteAdmin,createAdmin,createUser,deleteUser } from "./util.testing.js";
 
 describe("Test User.................", () => {
   beforeEach(async () => {
-    await User.create({
-      name: "test",
-      password: "rahasia",
-      email: "test@mail.com",
-    });
+    await createUser();
+     await createAdmin();
   });
   afterEach(async () => {
-    await User.deleteOne({
-      name: "test",
-    });
+     await deleteUser()
+     await deleteAdmin()
   });
 
-  it("should can register new user /api/v1/auth/register", async () => {
+  it("1. should can register new user /api/v1/auth/register", async () => {
     const result = await supertest(app).post("/api/v1/auth/register").send({
-      name: "test2",
+      name: "testnewuser",
       password: "rahasia2",
       email: "test2@mail.com",
     });
     expect(result.status).toBe(201);
     await User.deleteOne({
-      name: "test2",
+      name: "testnewuser",
     });
   });
 
-  it("User login sukses /api/v1/auth/login", async () => {
+  it("2. User login sukses /api/v1/auth/login", async () => {
     const result = await supertest(app).post("/api/v1/auth/login").send({
-      name: "test",
+      name: "userbiasa",
       password: "rahasia",
-      email: "test@mail.com",
+      email: "userbiasa@mail.com",
     });
     expect(result.status).toBe(200);
-    expect(result.body.data.name).toBe("test");
-    expect(result.body.data.email).toBe("test@mail.com");
+    expect(result.body.data.name).toBe("userbiasa");
+    expect(result.body.data.email).toBe("userbiasa@mail.com");
   });
 
-  it("User login gagal email/pasword kosong /api/v1/auth/login", async () => {
+  it("3. User login gagal email/pasword kosong /api/v1/auth/login", async () => {
     const result = await supertest(app).post("/api/v1/auth/login").send({
-      name: "test",
+      name: "userbiasa",
       password: "",
-      email: "test@mail.com",
+      email: "testuser@mail.com",
     });
     expect(result.status).toBe(400);
     expect(result.body.message).toBe("Invalid User");
   });
 
-  it("User login gagal invalid password /api/v1/auth/login", async () => {
+  it("4. User login gagal invalid password /api/v1/auth/login", async () => {
     const result = await supertest(app).post("/api/v1/auth/login").send({
-      name: "test",
+      name: "userbiasa",
       password: "rahasia_salah",
-      email: "test@mail.com",
+      email: "testuser@mail.com",
     });
     expect(result.status).toBe(400);
     expect(result.body.message).toBe("Invalid User");
   });
 
   //token cookies valid
-  it("should getUser logged with valid cookies /api/v1/auth/getUser ", async () => {
+  it("5. should getUser logged with valid cookies /api/v1/auth/getUser ", async () => {
     const result = await supertest(app)
       .get("/api/v1/auth/getUser").set({ Cookie: await getCookie() }); //set ke headers// ambil cookie untuk yang sudah login
     expect(result.status).toBe(200);
-    expect(result.body.data.name).toBe("mugi3");
+    expect(result.body.user.name).toBe("userbiasa");
   });
 
   //token cookies invalid
-  it("should can not getUser logged invalid cookies) /api/v1/auth/getUser ", async () => {
+  it("6. should can not getUser logged invalid cookies) /api/v1/auth/getUser ", async () => {
     const result = await supertest(app).get("/api/v1/auth/getUser")
       .set({ Cookie: await getCookie() + "pppp" }); //set ke headers// ambil cookie untuk yang sudah login
     expect(result.status).toBe(401);
     expect(JSON.parse(result.text).message).toBe("Token invalid")
   });
 
-  it("should can not getUser before Log In /api/v1/auth/getUser ", async () => {
+  it("7. should can not getUser before Log In /api/v1/auth/getUser ", async () => {
     const result = await supertest(app).get("/api/v1/auth/getUser");
     // .set( {'Cookie': await getCookie()});//set ke headers// ambil cookie untuk yang sudah login
     expect(result.status).toBe(401);
-    expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini" );
+    expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini");
   });
 
-  it("should can not getUser valid cookies and user has ben deleted /api/v1/auth/getUser ", async () => {
+  it("8. should can not getUser valid cookies and user has ben deleted /api/v1/auth/getUser ", async () => {
     //regiter new user
-    await(createUserLogin('testCookies','testcookies@mail.com','12345678'))
-    let cookiesUser = await getCookieByUserLogin('testcookies@mail.com','12345678')
+    await (createUserLogin('testCookies', 'testcookies@mail.com', '12345678'))
+    let cookiesUser = await getCookieByUserLogin('testcookies@mail.com', '12345678')
     //delete user
-    await User.deleteOne({name: "testCookies" });
+    await User.deleteOne({ name: "testCookies" });
     const result = await supertest(app).get("/api/v1/auth/getUser")
-    .set( {'Cookie': cookiesUser});//set ke headers// ambil cookie untuk yang sudah login
+      .set({ 'Cookie': cookiesUser });//set ke headers// ambil cookie untuk yang sudah login
 
     expect(result.status).toBe(401);
-    expect(JSON.parse(result.text).message).toBe("User tidak ditemukan" );
+    expect(JSON.parse(result.text).message).toBe("User tidak ditemukan");
   });
 
 
-  it("should logout  /api/v1/auth/logout ", async () => {
+  it("9. should logout  /api/v1/auth/logout ", async () => {
     const result = await supertest(app).get("/api/v1/auth/logout");
     expect(result.status).toBe(200);
     expect(JSON.parse(result.text).message).toBe("logout Berhasil");
   });
 
 
-// role test
-  it("should testrole logged with valid role and cookies /api/v1/auth/testrole ", async () => {
+  // role test
+  it("10. should testrole logged with valid role and cookies /api/v1/auth/testrole ", async () => {
     const result = await supertest(app)
       .get("/api/v1/auth/testrole")
       .set({ Cookie: await getCookieAdmin() }); //set ke headers// ambil cookie untuk yang sudah login
@@ -116,7 +111,7 @@ describe("Test User.................", () => {
     expect(result.text).toBe("berhasil");
   });
 
-  it("should testrole logged with invalid role and valid cookies /api/v1/auth/testrole ", async () => {
+  it("11. should testrole logged with invalid role and valid cookies /api/v1/auth/testrole ", async () => {
     const result = await supertest(app)
       .get("/api/v1/auth/testrole")
       .set({ Cookie: await getCookie() }); //set ke headers// ambil cookie untuk yang sudah login

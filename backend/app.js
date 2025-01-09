@@ -3,7 +3,10 @@ import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 import cors from 'cors'
+// Rputer
 import authRouter from './router/authRouter.js'
+import questionRouter from './router/questionRouter.js'
+
 import cookieParser from 'cookie-parser'
 //unutk logger
 import morgan from 'morgan'
@@ -23,21 +26,23 @@ if(process.env.NODE_Env ==='development'){
   app.use(morgan('dev'))
 }
 
-//end poin
-app.get('/api/v1/test', (req, res) => {
-  res.status(200).json({
-    message :"Message dari end pont"
-  })
-}) 
+//end poin tidak dibutuhkan lagi
+// app.get('/api/v1/test', (req, res) => {
+//   res.status(200).json({
+//     message :"Message dari end pont"
+//   })
+// }) 
 
 // parent Router
 app.use('/api/v1/auth',authRouter)
+app.use('/api/v1/question',questionRouter)
+
 app.use(notFound)
 app.use(errorHandler)
 
 
 app.listen(port, () => {
-  console.log(`aplikasi jalanxxxz di port port ${port}`)
+  console.log(`aplikasi jalan pada port port : ${port}`)
 })
 
 // connection db
