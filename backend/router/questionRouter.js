@@ -23,7 +23,7 @@ router.put('/:id',authMiddleware,UpdateQuestion)
 
 // Delete
 //delete /api/v1/question/:id
-router.delete('/:id',DeleteQuestion)
+router.delete('/:id',authMiddleware,DeleteQuestion)
 
 // // get/api/v1/auth/test
 // router.get('/testrole',authMiddleware,permissionUser("admin"),(req,res)=>{

@@ -77,7 +77,7 @@ export const deleteAdmin = async () => {
 
 // create question
 export const createQuestion = async () => {
-  await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
+  await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
               title: "judulTest33",
               category: "database",
               question: "pertanyaan untuk duplicate adalah untuk membuat pertanyaan database",

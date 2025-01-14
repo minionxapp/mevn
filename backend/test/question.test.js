@@ -5,6 +5,7 @@ import Question from "../models/Question.js";
 // import fs from fs
 
 import { getCookie, getCookieAdmin, createUserLogin, getCookieByUserLogin, createAdmin, createUser, deleteAdmin, deleteUser, createQuestion, deleteQuestion } from "./util.testing.js";
+import { isValidObjectId } from "mongoose";
 
 describe("Question Create", () => {
     beforeEach(async () => {
@@ -82,6 +83,9 @@ describe("Question Find ", () => {
         await Question.deleteOne({
             title: "judulTest33"
           })
+        await Question.deleteOne({
+        title: "judulTest335"
+        })
     });
     
     it("5. find all question user  logged /api/v1/question/ ", async () => {
@@ -106,9 +110,7 @@ describe("Question Find ", () => {
 
         const result = await supertest(app).get("/api/v1/question/"+dataQuestion.body.data._id).set({ Cookie: await getCookie() })
         expect(JSON.parse(result.text).message).toBe("Document Id pertanyaan berhasil di temukan");
-        await Question.deleteOne({
-            title: "judulTest335"
-          })
+        
 
     })
 
@@ -197,14 +199,68 @@ describe("Question Update ", () => {
             category: "database",
             question: "pertanyaan updated",
         });
-        expect(result.status).toBe(200);
+        expect(result.status).toBe(401);
         expect(result.body.message).toBe("Anda tidak bisa melakukan update/delete yang bukan milik anda")
         
     })
 })
 
-describe("Question Delete ", () => {
-    it("ini update question  /api/v1/question/:id ", async () => {
+describe("Question Delete", () => {
+    beforeEach(async () => {
+        await createUser();
+        await createAdmin();
+        await createQuestion()
+    });
+    afterEach(async () => {
+        await deleteUser()
+        await deleteAdmin()
+        await deleteQuestion()
+        await Question.deleteOne({
+            title:"judul Awal"
+        })
+        await Question.deleteOne({
+            title:"judulTest33"
+        })
+        
+          
+    });
+    it("it should can delete question by user created /api/v1/question/:id ", async () => {
+        // add data first
+        const resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const idParam =(resultNew.body.data._id)
+        const result = await supertest(app).delete("/api/v1/question/"+idParam).set({ Cookie: await getCookie() })   
+        expect(result.status).toBe(200);
+
+        const result2 = await supertest(app).get("/api/v1/question/"+idParam).set({ Cookie: await getCookie() })
+        expect(result2.body.message).toBe("Id pertanyaan tidak ditemukan")
+    })
+
+    it("it should can not delete question  Id not found /api/v1/question/:id ", async () => {
         console.log("Delete Question")
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).delete("/api/v1/question/6780c77e6bec7b0aacb808f7").set({ Cookie: await getCookie() })
+        expect(result.status).toBe(404);
+        expect(JSON.parse(result.text).message).toBe("Id pertanyaan tidak ditemukan")
+    })
+
+    it("it should can not delete question  Id format wrong/false /api/v1/question/:id ", async () => {
+        console.log("Delete Question")
+        // add data first
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).delete("/api/v1/question/6780c77e6bec7b0aacb808f7x").set({ Cookie: await getCookie() })
+        expect(result.status).toBe(404);
+        expect(JSON.parse(result.text).message).toBe("Format Id salah")
     })
 })
