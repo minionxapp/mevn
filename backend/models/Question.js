@@ -10,7 +10,7 @@ const questionSchema = new mongoose.Schema({
     },
     question :{
         type:String,
-        required :[true,"pertanyaan harus diidi"],
+        required :[true,"pertanyaan harus diisi"],
     },
     category:{
         type:String,
@@ -21,7 +21,7 @@ const questionSchema = new mongoose.Schema({
     userId :{
         type :Schema.Types.ObjectId,
         ref :'User',
-        required : [true,"UserId hrus diisi"]
+        required : [true,"UserId harus diisi"]
     },
     countVote :{
         type : Number,

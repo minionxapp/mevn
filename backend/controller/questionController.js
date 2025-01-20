@@ -5,18 +5,29 @@ import mongoose, { isValidObjectId } from "mongoose";
 export const CreateQuestion = asyncHandler(async (req, res) => {
     const { title, question, category } = req.body
     //cek apakah judul sudah ada
-    const newQuestion = await Question.create({
-        title,
-        question,
-        category,
-        userId: req.user._id
-
+    const oldQuestion = await Question.findOne({
+        title: title
     })
+    if(!oldQuestion){
 
-    return res.status(200).json({
-        message: "berhasil tambah pertanyaan",
-        data: newQuestion
-    })
+        const newQuestion = await Question.create({
+            title,
+            question,
+            category,
+            userId: req.user._id
+            
+        })
+        
+        return res.status(200).json({
+            message: "berhasil tambah pertanyaan",
+            data: newQuestion
+        })
+    }else{
+        return res.status(401).json({
+            message: "Judul sudah ada",
+            
+        })
+    }
 
 })
 

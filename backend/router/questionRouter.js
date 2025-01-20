@@ -9,21 +9,21 @@ const router = express.Router()
 
 // Create dokumen
 //post /api/v1/question/
-router.post('/',authMiddleware,permissionUser("admin","user"),CreateQuestion)
+router.post('/',authMiddleware,permissionUser("admin"),CreateQuestion)
 
 // Read dokumen
 //get /api/v1/question
-router.get('/',authMiddleware,QuestionsAll)
+router.get('/',authMiddleware,permissionUser("admin"),QuestionsAll)
 //get /api/v1/question/:id
-router.get('/:id',authMiddleware,DetailQuestion)
+router.get('/:id',authMiddleware,permissionUser("admin"),DetailQuestion)
 
 // update dokumen
 //put /api/v1/question/:id
-router.put('/:id',authMiddleware,UpdateQuestion)
+router.put('/:id',authMiddleware,permissionUser("admin","user"),UpdateQuestion)
 
 // Delete
 //delete /api/v1/question/:id
-router.delete('/:id',authMiddleware,DeleteQuestion)
+router.delete('/:id',authMiddleware,permissionUser("admin","user"),DeleteQuestion)
 
 // // get/api/v1/auth/test
 // router.get('/testrole',authMiddleware,permissionUser("admin"),(req,res)=>{

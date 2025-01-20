@@ -1,6 +1,7 @@
 import express from 'express'
 import {RegisterUser,LoginUser,LogoutUser,getUser} from '../controller/authController.js'
 import  {authMiddleware, permissionUser} from '../middleware/authMiddleware.js'
+// import { CreateModel } from '../controller/dev/createModel.js'
 const router = express.Router()
 //post /api/v1/auth/register
 router.post('/register',RegisterUser)
@@ -16,5 +17,11 @@ router.get('/testrole',authMiddleware,permissionUser("admin"),(req,res)=>{
     res.send("berhasil")
     
 })
+
+
+// router.get('/test',CreateModel,(req,res)=>{
+//     res.send("berhasil")
+    
+// })
 
 export default router

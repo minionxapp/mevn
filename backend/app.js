@@ -6,6 +6,7 @@ import cors from 'cors'
 // Rputer
 import authRouter from './router/authRouter.js'
 import questionRouter from './router/questionRouter.js'
+import devRouter from './router/devRouter.js'
 
 import cookieParser from 'cookie-parser'
 //unutk logger
@@ -34,6 +35,7 @@ if(process.env.NODE_Env ==='development'){
 // }) 
 
 // parent Router
+app.use('/api/v1/dev',devRouter)
 app.use('/api/v1/auth',authRouter)
 app.use('/api/v1/question',questionRouter)
 

@@ -2,27 +2,30 @@ import supertest from "supertest";
 import { app } from "../app.js";
 import User from "../models/User.js";
 import Question from "../models/Question.js";
-// import fs from fs
+import { createUser, removeUser, getCookieUser } from "./utilUser.js";
 
-import { getCookie, getCookieAdmin, createUserLogin, getCookieByUserLogin, createAdmin, createUser, deleteAdmin, deleteUser, createQuestion, deleteQuestion } from "./util.testing.js";
-import { isValidObjectId } from "mongoose";
+const userTestEmail = 'admin@mail.com'
+const userTestName = 'administrator'
+const userTestRole = 'admin'
+const userTestPassword = 'rahasia'
 
-describe("Question Create", () => {
+describe("CRUD Operations for Create Question Table", () => {
     beforeEach(async () => {
-        await createUser();
-        await createAdmin();
-
+        await createUser(userTestName, userTestEmail, userTestPassword, userTestRole)
 
     });
     afterEach(async () => {
-        await deleteUser()
-        await deleteAdmin();
-        await deleteQuestion();
-    });
+        await removeUser(userTestName)
+        await removeUser("userTestName")
+        await Question.deleteOne({
+            title: 'judulTest'
+        })
+    })
 
-
-    it("1. Admin can create Question with valid cookies .... /api/v1/question", async () => {
-        const result = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
+    //Positive test for Create
+    it('should sukses create a new question', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judulTest",
             category: "database",
             question: "pertanyaan adalah untuk membuat pertanyaan database",
@@ -30,34 +33,25 @@ describe("Question Create", () => {
         expect(result.status).toBe(200);
         expect(JSON.parse(result.text).message).toBe("berhasil tambah pertanyaan");
         expect(result.body.data.title).toBe("judulTest")
-    })
+    });
 
-    it("2. Admin cannot create with incorect categry Question with valid cookies .... /api/v1/question", async () => {
-        const result = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
-            title: "judulTest",
-            category: "database2222",
-            question: "pertanyaan adalah untuk membuat pertanyaan database",
-        });
-        expect(result.status).toBe(400);
-        expect(JSON.parse(result.text).message).toBe("`database2222` is not a valid enum value for path `category`.");
-    })
+    //Negative test for Create
 
-    it("3. Admin cannot create duplicate title categry Question with valid cookies .... /api/v1/question", async () => {
-        let resultOld = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
+    it('should fail create a new question user not login', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").send({
             title: "judulTest",
             category: "database",
             question: "pertanyaan adalah untuk membuat pertanyaan database",
         });
+        // console.log(result.body.message)
+        expect(result.status).toBe(401);
+        expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini");
+    });
 
-        const result = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
-            title: "judulTest",
-            category: "database",
-            question: "pertanyaan untuk duplicate adalah untuk membuat pertanyaan database",
-        });
-        expect(result.status).toBe(200);
-        expect(JSON.parse(result.text).message).toBe("E11000 duplicate key error collection: forum.questions index: title_1 dup key: { title: \"judulTest\" }");
-    })
-    it("4. Should cannot create Question with invalid cookies no login(user).... /api/v1/question", async () => {
+    it('should fail create a new question invalid permission/role', async () => {
+        await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser("user@mail.com", userTestPassword)
         const result = await supertest(app).post("/api/v1/question").send({
             title: "judulTest",
             category: "database",
@@ -65,202 +59,507 @@ describe("Question Create", () => {
         });
         expect(result.status).toBe(401);
         expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini");
+    });
+
+    it('should fail create a new question duplicate title', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultold = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        expect(result.status).toBe(401);
+        expect(JSON.parse(result.text).message).toBe("Judul sudah ada");
+    });
+
+
+    it('should fail create a new question with invalid data (title null)', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: null,
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("Judul harus diinput");
+    });
+    it('should fail create a new question with invalid data (title "")', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("Judul harus diinput");
+    });
+
+    it('should fail create a new question with invalid data (category null )', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: null,
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("pertanyaan harus memiliki category");
+    });
+
+    it('should fail create a new question with invalid data (category is not valid )', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "linux",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("`linux` is not a valid enum value for path `category`.");
+    });
+    it('should fail create a new question with invalid data (question null)', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: null,
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("pertanyaan harus diisi");
+    });
+    it('should fail create a new question with invalid data (question "")', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("pertanyaan harus diisi");
+    });
+})
+
+
+// Positive test for Create
+describe("CRUD Operations for Fetch  Question Table", () => {
+    beforeEach(async () => {
+        await createUser(userTestName, userTestEmail, userTestPassword, userTestRole)
+    });
+    afterEach(async () => {
+        await removeUser(userTestName)
+        await removeUser("userTestName")
+        await Question.deleteOne({
+            title: 'judulTest'
+        })
     })
 
 
-})
-
-describe("Question Find ", () => {
-    beforeEach(async () => {
-        await createUser();
-        await createAdmin();
-        await createQuestion()
-    });
-    afterEach(async () => {
-        await deleteUser()
-        await deleteAdmin()
-        await deleteQuestion()
-        await Question.deleteOne({
-            title: "judulTest33"
-          })
-        await Question.deleteOne({
-        title: "judulTest335"
-        })
-    });
-    
-    it("5. find all question user  logged /api/v1/question/ ", async () => {
-        const result = await supertest(app)
-            .get("/api/v1/question").set({ Cookie: await getCookie() });
+    it('should success fetch all question', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question").set({ Cookie: userCookie })
         expect(result.status).toBe(200);
-        // expect((result.body.data)).toHaveLength(1)
         expect((result.body.data).length).toBeGreaterThanOrEqual(1)
-    })
-
-    it("6. find all question user not login /api/v1/question/ ", async () => {
+    });
+    //Negative
+    it('should fail  fetch all question without login', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
         const result = await supertest(app).get("/api/v1/question")
-        expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini");
-    })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Anda tidak boleh mengakases halaman ini");
+    });
 
-    it("7. find  question by _id user has ben login /api/v1/question/:id", async () => {
-         let dataQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookieAdmin() }).send({
-                      title: "judulTest335",
-                      category: "database",
-                      question: "pertanyaan untuk duplicate adalah untuk membuat pertanyaan database",
-                  });
+    it('should fail  fetch all question token invalid - wrong cookie ', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question").set({ Cookie: userCookie + "gggg" })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Token invalid");
+    });
 
-        const result = await supertest(app).get("/api/v1/question/"+dataQuestion.body.data._id).set({ Cookie: await getCookie() })
-        expect(JSON.parse(result.text).message).toBe("Document Id pertanyaan berhasil di temukan");
-        
+    it('should fail fetch all question invalid permission/role', async () => {
+        await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser("user@mail.com", userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question").set({ Cookie: userCookie })
+        expect(result.status).toBe(403);
+        expect((result.body.message)).toBe("role anda tidak bisa mengakase halaman")
+    });
+    //-------By ID------------------------
+    it('should success fetch  question by Id', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question/" + resultQuestion.body.data._id).set({ Cookie: userCookie })
+        expect(result.status).toBe(200);
+        expect(result.body.data.title).toBe("judulTest")
+    });
 
-    })
+    it('should fail fetch  question by Id id not found', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question/" + "6780c77e6bec7b0aacb808f7").set({ Cookie: userCookie })
+        expect(result.status).toBe(404);
+        expect(result.body.message).toBe("Id pertanyaan tidak ditemukan")
+    });
 
-    it("8. find  question by _id user not login /api/v1/question/677e20c07f0671e439d3860b", async () => {
-        const result = await supertest(app).get("/api/v1/question/677e20c07f0671e439d3860b")
-        expect(JSON.parse(result.text).message).toBe("Anda tidak boleh mengakases halaman ini");
-    })
-})
+    it('should fail fetch  question by Id invalid Id format', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question/" + resultQuestion.body.data._id+"l").set({ Cookie: userCookie })
+        expect(result.status).toBe(404);
+        expect(result.body.message).toBe("Resource not found")
+    });
 
+    it('should fail fetch  question by Id without login', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question/" + resultQuestion.body.data._id)
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Anda tidak boleh mengakases halaman ini")
+    });
 
-describe("Question Update ", () => {
+    it('should fail fetch  question by Id invalid token', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const result = await supertest(app).get("/api/v1/question/" + resultQuestion.body.data._id).set({ Cookie: userCookie+"l" })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Token invalid")
+    });
+
+    it('should fail fetch  question by Id invalid permission/role', async () => {
+        await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookieAdmin = await getCookieUser(userTestEmail, userTestPassword)
+        const resultQuestion = await supertest(app).post("/api/v1/question").set({ Cookie: userCookieAdmin }).send({
+            title: "judulTest",
+            category: "database",
+            question: "pertanyaan adalah untuk membuat pertanyaan database",
+        });
+        const userCookie = await getCookieUser("user@mail.com", userTestPassword)
+        const result = await supertest(app).get("/api/v1/question/" + resultQuestion.body.data._id).set({ Cookie: userCookie })
+        expect(result.status).toBe(403);
+        expect(result.body.message).toBe("role anda tidak bisa mengakase halaman")
+    });
+
+  
+
+});
+
+describe("CRUD Operations for Update  Question Table", () => {
     beforeEach(async () => {
-        await createUser();
-        await createAdmin();
-        await createQuestion()
+        await createUser(userTestName, userTestEmail, userTestPassword, userTestRole)
     });
     afterEach(async () => {
-        await deleteUser()
-        await deleteAdmin()
-        await deleteQuestion()
-          await Question.deleteOne({
-            title:"judul Updated"
-        })
-
-        await Question.deleteOne({
-            title:"judul Updated admin"
-        })
-        await Question.deleteOne({
-            title: "judulTest33"
-          })
-
-          await Question.deleteOne({
-            title:"judul Awal"
-        })
-        await User.deleteOne({
-            name : 'mugi2'
-        })
-          
-    });
-    it("it should update question by user created /api/v1/question/:id ", async () => {
-        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+        await removeUser(userTestName)
+        await removeUser("userTestName")
+        await removeUser("userTestName1")
+        await removeUser("userTestName2")
+        await Question.deleteOne({ title: 'judulTest' })
+        await Question.deleteOne({ title:"judul Awal" })
+        await Question.deleteOne({ title:"judul Updated user" })
+    })
+    //Positive
+    it('should success to update a question with valid data', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
-        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: await getCookie() }).send({
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie }).send({
             title: "judul Updated user",
             category: "database",
             question: "pertanyaan updated",
         });
         expect(result.status).toBe(200);
         expect(result.body.data.title).toBe("judul Updated user")
-        await Question.deleteOne({
-            title:"judul Updated user"
-        })
-    })
+        await Question.deleteOne({ title:"judul Updated user" })
+    }); 
 
-    it("it should update question by admin role created /api/v1/question/:id ", async () => {
-        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+    it('should fail to update a question withot login', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
-        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: await getCookieAdmin() }).send({
-            title: "judul Updated by admin",
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).send({
+            title: "judul Updated user",
             category: "database",
             question: "pertanyaan updated",
         });
-        expect(result.status).toBe(200);
-        expect(result.body.data.title).toBe("judul Updated by admin")
-        await Question.deleteOne({
-            title:"judul Updated by admin"
-        })
-    })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Anda tidak boleh mengakases halaman ini")
+    }); 
 
-    it("it should cannot update question by no user created /api/v1/question/:id ", async () => {
-        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+    it('should fail to update a question invalid token', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie+"x" }).send({
+            title: "judul Updated user",
+            category: "database",
+            question: "pertanyaan updated",
+        });
+        expect(result.status).toBe(401);
+        expect(result.body.message).toBe("Token invalid")
+    }); 
+
+    it('should fail to update a question invalid permission/role', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        await createUser("userTestName", "user@mail.com", userTestPassword, "kasir")
+        const userNewCookie = await getCookieUser("user@mail.com", userTestPassword)
+
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userNewCookie }).send({
+            title: "judul Updated user",
+            category: "database",
+            question: "pertanyaan updated",
+        });
+        expect(result.status).toBe(403);
+        expect(result.body.message).toBe("role anda tidak bisa mengakase halaman")
+    }); 
+
+
+    //lanjut nanti ya----- untuk cookie nya
+    it('should fail to update a question invalid user created', async () => {
+        await createUser("userTestName1", "user1@mail.com", userTestPassword, "admin")
+        const userCookie = await getCookieUser("user1@mail.com", userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
 
-        let createUser = await createUserLogin('mugi2','mugi2@mail.com','rahasia','user')
-        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: await getCookieByUserLogin('mugi2@mail.com','rahasia') }).send({
-            title: "judul Updated by admin",
+        await createUser("userTestName2", "user2@mail.com", userTestPassword, "user")
+        const userNewCookie = await getCookieUser("user2@mail.com", userTestPassword)
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userNewCookie }).send({
+            title: "judul Updated user",
             category: "database",
             question: "pertanyaan updated",
         });
         expect(result.status).toBe(401);
         expect(result.body.message).toBe("Anda tidak bisa melakukan update/delete yang bukan milik anda")
-        
-    })
+    }); 
+
+    it('should fail to update a question with invalid data (title "")', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie }).send({
+            title: "",
+            category: "database",
+            question: "pertanyaan updated",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toBe("Judul harus diinput")
+    }); 
+
+    it('should fail to update a question with invalid data (category invalid value)', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "java",
+            question: "pertanyaan updated",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toContain("is not a valid enum")
+    }); 
+
+    it('should fail to update a question with invalid data (question "")', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+        const result = await supertest(app).put("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "",
+        });
+        expect(result.status).toBe(400);
+        expect(result.body.message).toContain("pertanyaan harus diisi")
+    }); 
 })
 
-describe("Question Delete", () => {
+
+
+// it('should fail create a new question with wrong data (question null)', async () => {
+//     console.log("llllllll")
+// console.log(result.body.message)
+// }); 
+describe("CRUD Operations for Delete  Question Table", () => {
     beforeEach(async () => {
-        await createUser();
-        await createAdmin();
-        await createQuestion()
+        await createUser(userTestName, userTestEmail, userTestPassword, userTestRole)
     });
     afterEach(async () => {
-        await deleteUser()
-        await deleteAdmin()
-        await deleteQuestion()
-        await Question.deleteOne({
-            title:"judul Awal"
-        })
-        await Question.deleteOne({
-            title:"judulTest33"
-        })
-        
-          
-    });
-    it("it should can delete question by user created /api/v1/question/:id ", async () => {
-        // add data first
-        const resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+        await removeUser(userTestName)
+        await removeUser("userTestName")
+        await Question.deleteOne({title: 'judulTest' })
+        await Question.deleteOne({title: 'judul Awal' })
+
+    })
+    //Positive
+    it('should succes to delete a question ', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
-        const idParam =(resultNew.body.data._id)
-        const result = await supertest(app).delete("/api/v1/question/"+idParam).set({ Cookie: await getCookie() })   
+        const result = await supertest(app).delete("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie })
         expect(result.status).toBe(200);
+        expect(result.body.message).toContain("Delete pertanyaan berhasil")
+    }); 
 
-        const result2 = await supertest(app).get("/api/v1/question/"+idParam).set({ Cookie: await getCookie() })
-        expect(result2.body.message).toBe("Id pertanyaan tidak ditemukan")
-    })
-
-    it("it should can not delete question  Id not found /api/v1/question/:id ", async () => {
-        console.log("Delete Question")
-        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+    // Negative
+    it('should fail to delete a question without login ', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
-        const result = await supertest(app).delete("/api/v1/question/6780c77e6bec7b0aacb808f7").set({ Cookie: await getCookie() })
-        expect(result.status).toBe(404);
-        expect(JSON.parse(result.text).message).toBe("Id pertanyaan tidak ditemukan")
-    })
+        const result = await supertest(app).delete("/api/v1/question/"+(resultNew.body.data._id))
+        expect(result.status).toBe(401);
+        expect(result.body.message).toContain("Anda tidak boleh mengakases halaman ini")
+    }); 
 
-    it("it should can not delete question  Id format wrong/false /api/v1/question/:id ", async () => {
-        console.log("Delete Question")
-        // add data first
-        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: await getCookie() }).send({
+    it('should fail to delete a question invalid token', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
             title: "judul Awal",
             category: "database",
             question: "pertanyaan Awal",
         });
-        const result = await supertest(app).delete("/api/v1/question/6780c77e6bec7b0aacb808f7x").set({ Cookie: await getCookie() })
+        const result = await supertest(app).delete("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userCookie+"z" })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toContain("Token invalid")
+    }); 
+
+    it('should fail to delete a question invalid permission/role', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+
+        await createUser("userTestName", "user@mail.com", userTestPassword, "kasir")
+        const userNewCookie = await getCookieUser("user@mail.com", userTestPassword)
+        const result = await supertest(app).delete("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userNewCookie })
+        expect(result.status).toBe(403);
+        expect(result.body.message).toContain("role anda tidak bisa mengakase halaman")
+    }); 
+
+
+    it('should fail to delete a question invalid user created', async () => {
+        // await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        let resultNew = await supertest(app).post("/api/v1/question").set({ Cookie: userCookie }).send({
+            title: "judul Awal",
+            category: "database",
+            question: "pertanyaan Awal",
+        });
+
+        await createUser("userTestName", "user@mail.com", userTestPassword, "user")
+        const userNewCookie = await getCookieUser("user@mail.com", userTestPassword)
+        const result = await supertest(app).delete("/api/v1/question/"+(resultNew.body.data._id)).set({ Cookie: userNewCookie })
+        expect(result.status).toBe(401);
+        expect(result.body.message).toContain("Anda tidak bisa melakukan update/delete yang bukan milik anda")
+    }); 
+
+    it('should fail to delete a question   id not found', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).delete("/api/v1/question/"+('6780c77e6bec7b0aacb808f7')).set({ Cookie: userCookie })
         expect(result.status).toBe(404);
-        expect(JSON.parse(result.text).message).toBe("Format Id salah")
-    })
+        expect(result.body.message).toContain("Id pertanyaan tidak ditemukan")
+    }); 
+    it('should fail to delete a question invalid format ID', async () => {
+        const userCookie = await getCookieUser(userTestEmail, userTestPassword)
+        const result = await supertest(app).delete("/api/v1/question/"+('6780c77e6bec7b0aacb808f7x')).set({ Cookie: userCookie })
+        expect(result.status).toBe(404);
+        expect(result.body.message).toContain("Format Id salah")
+    }); 
+    
+
 })
+
+
+
+// it('should fail create a new question with wrong data (question null)', async () => {
+//     console.log("llllllll")
+// console.log(result.body.message)
+// }); 
+// describe("CRUD Operations for Fetch  Question Table", () => {})
+    // beforeEach(async () => {
+    //     await createUser(userTestName, userTestEmail, userTestPassword, userTestRole)
+    // });
+    // afterEach(async () => {
+    //     await removeUser(userTestName)
+    //     await removeUser("userTestName")
+    //     await Question.deleteOne({
+    //         title: 'judulTest'
+    //     })
+    // })

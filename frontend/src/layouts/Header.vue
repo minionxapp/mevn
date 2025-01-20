@@ -87,6 +87,14 @@ const items = ref([
     {
         label: 'Contact',
         icon: 'pi pi-envelope'
-    }
+    },
+    {
+        label: 'Dev',
+        icon: 'pi pi-home',
+        command: () => {
+            router.push({name: 'Dev'});
+        }
+        
+    },
 ]);
 </script>
