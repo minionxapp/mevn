@@ -11,7 +11,7 @@
             <h2 class="text-4xl text primary"> List Question</h2>
             <Button label="Tambah" rounded type="button" icon="pi pi-plus" @click="dialog=true"></Button>
           </div>
-          <Dialog v-model:visible="dialog" modal header="Edit Profile" :style="{ width: '70%' }">
+          <Dialog v-model:visible="dialog" modal header="Buat Pertanyaan" :style="{ width: '70%' }">
           <FormQuestion  @close="closeDialog()"/>
           </Dialog>
 
