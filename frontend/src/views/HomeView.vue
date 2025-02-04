@@ -32,13 +32,29 @@
 <script setup>
 import ListQuestion from '@/components/Question/ListQuestion.vue';
 import Dialog from 'primevue/dialog';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import FormQuestion from '@/components/Question/FormQuestion.vue';
+import custumFetch from '@/api';
+
 
 const dialog=ref(false)
+const questions = ref(null)
+
+const allQuestions = async()=>{
+  try {
+    const { data } = await custumFetch.get("/question") 
+    console.log(data)
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const closeDialog =()=>{
   dialog.value = false
 }
+
+onMounted(()=>{
+  allQuestions()
+})
 
 </script>

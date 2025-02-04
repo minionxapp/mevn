@@ -10,7 +10,7 @@ const router = express.Router()
 // Create dokumen
 //post /api/v1/question/
 router.post('/',authMiddleware,permissionUser("admin"),CreateQuestion)
-
+ 
 // Read dokumen
 //get /api/v1/question
 router.get('/',authMiddleware,permissionUser("admin"),QuestionsAll)

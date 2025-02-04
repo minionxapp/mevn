@@ -5,10 +5,10 @@ import mongoose, { isValidObjectId } from "mongoose";
 export const CreateQuestion = asyncHandler(async (req, res) => {
     const { title, question, category } = req.body
     //cek apakah judul sudah ada
-    const oldQuestion = await Question.findOne({
+    const oldQuestion = await Question.findOne({      
         title: title
     })
-    if(!oldQuestion){
+    if(!oldQuestion){  
 
         const newQuestion = await Question.create({
             title,
