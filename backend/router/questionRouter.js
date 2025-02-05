@@ -13,7 +13,7 @@ router.post('/',authMiddleware,permissionUser("admin"),CreateQuestion)
  
 // Read dokumen
 //get /api/v1/question
-router.get('/',authMiddleware,permissionUser("admin"),QuestionsAll)
+router.get('/',/*authMiddleware,permissionUser("admin"),*/QuestionsAll)
 //get /api/v1/question/:id
 router.get('/:id',authMiddleware,permissionUser("admin"),DetailQuestion)
 

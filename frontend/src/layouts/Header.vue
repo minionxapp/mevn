@@ -34,7 +34,7 @@ const {dialog} =storeToRefs(authStores);
 //state
 //const visible = ref(false)
 const router = useRouter()
-function dasboard() {
+const  dasboard=()=> {
     router.push({name: 'Dashboard'});
 }
 
@@ -85,8 +85,11 @@ const items = ref([
         ]
     },
     {
-        label: 'Contact',
-        icon: 'pi pi-envelope'
+        label: 'About',
+        icon: 'pi pi-book',
+        command:()=>{
+            router.push({name:'about'})
+        }
     },
     {
         label: 'Dev',

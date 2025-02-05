@@ -57,6 +57,7 @@ const handleSubmit =async()=>{
         if(Questiondata){
             clerInput()
             emit('close')
+            emit('reload')
         }
     } catch (error) {
         console.log(error)

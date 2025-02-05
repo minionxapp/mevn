@@ -9,16 +9,16 @@
         <div class="p-3 border-round-sm  bg-blue-50">
           <div class="flex justify-content-between">
             <h2 class="text-4xl text primary"> List Question</h2>
-            <Button label="Tambah" rounded type="button" icon="pi pi-plus" @click="dialog=true"></Button>
+            <Button v-if="authStore.currentUser"
+            label="Tambah" rounded type="button" 
+            icon="pi pi-plus" @click="dialog=true"></Button>
           </div>
           <Dialog v-model:visible="dialog" modal header="Buat Pertanyaan" :style="{ width: '70%' }">
-          <FormQuestion  @close="closeDialog()"/>
+          <FormQuestion  @close="closeDialog()" @reload="allQuestions()"/>
           </Dialog>
 
-          <ListQuestion />
-          <ListQuestion />
-          <ListQuestion />
-          <ListQuestion />
+          <ListQuestion v-if="questions" v-for="q in questions" :key="q" :data="q" />
+        <LoadingSpinner v-else/>
         </div>
 
 
@@ -35,6 +35,10 @@ import Dialog from 'primevue/dialog';
 import { onMounted, ref } from 'vue';
 import FormQuestion from '@/components/Question/FormQuestion.vue';
 import custumFetch from '@/api';
+import { useAuthStore } from '@/stores/authStores';
+import LoadingSpinner from '@/components/Question/LoadingSpinner.vue';
+
+const authStore = useAuthStore()
 
 
 const dialog=ref(false)
@@ -43,7 +47,8 @@ const questions = ref(null)
 const allQuestions = async()=>{
   try {
     const { data } = await custumFetch.get("/question") 
-    console.log(data)
+    console.log(data.data)
+    questions.value= data.data
   } catch (error) {
     console.log(error)
   }
