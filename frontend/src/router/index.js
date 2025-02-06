@@ -4,6 +4,7 @@ import DasboardView from '@/views/DasboardView.vue'
 import { useAuthStore } from '@/stores/authStores'
 import DevView from '../views/Dev/DevView.vue'
 import AboutView from '@/views/AboutView.vue'
+import DevKolomView from '@/views/Dev/DevKolomView.vue'
 
 
 const router = createRouter({
@@ -31,6 +32,11 @@ const router = createRouter({
       path: '/dev',
       name: 'Dev',
       component: DevView,
+    },
+    {
+      path: '/devkolom',
+      name: 'Kolom',
+      component: DevKolomView,
     },
 
   ], 

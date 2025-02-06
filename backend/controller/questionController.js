@@ -7,7 +7,7 @@ export const CreateQuestion = asyncHandler(async (req, res) => {
     //cek apakah judul sudah ada
     const oldQuestion = await Question.findOne({      
         title: title
-    })
+    }) 
     if(!oldQuestion){  
 
         const newQuestion = await Question.create({

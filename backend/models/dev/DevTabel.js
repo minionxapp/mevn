@@ -13,7 +13,7 @@ const DevTabelSchema = new mongoose.Schema({
     priv:{
         type :String,
         required :[true,"Desc cannot be empty"],
-        enum:["Public","Private"],
+        enum:["Public","Private","All"],
         unique:[false]
     },
     userId :{
@@ -31,6 +31,6 @@ const DevTabelSchema = new mongoose.Schema({
     timestamps :true
 })
 
-const DevTabel = mongoose.model("dev_tabel",DevTabelSchema)
+const DevTabel = mongoose.model("dev_table",DevTabelSchema)
 
 export default DevTabel

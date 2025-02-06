@@ -91,13 +91,26 @@ const items = ref([
             router.push({name:'about'})
         }
     },
+    
     {
-        label: 'Dev',
-        icon: 'pi pi-home',
-        command: () => {
-            router.push({name: 'Dev'});
-        }
-        
-    },
+        label:'Development',
+        icon:'pi pi-server',
+        items:[
+            {
+            label:'Tabel',
+            icon:'pi pi-table',
+            command:()=>{
+                router.push({name:'Dev'})
+                }
+            },
+            {
+            label:'Kolom',
+            icon:'pi pi-clone',
+            command:()=>{
+                router.push({name:'Kolom'})
+                }
+            }
+        ]
+    }
 ]);
 </script>
