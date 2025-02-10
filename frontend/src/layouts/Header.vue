@@ -10,7 +10,7 @@
 
                 </div>
             </template>
-        </Menubar>        
+        </Menubar>   
     </div>
     <FormAuthDialog  v-model:visible = "dialog" />
     
@@ -35,7 +35,8 @@ const {dialog} =storeToRefs(authStores);
 //const visible = ref(false)
 const router = useRouter()
 const  dasboard=()=> {
-    router.push({name: 'Dashboard'});
+    console.log(dialog)
+    // router.push({name: 'Dashboard'});
 }
 
 const items = ref([

@@ -4,16 +4,30 @@
             <!-- <AlertMessage v-if="errorAlert" :message="errorMsg" /> -->
             <div class="flex flex-column gap-2 my-3">
                 <label for="username">Table Name</label>
-                <InputText id="tabelname" v-model= props.tabelName aria-describedby="username-help" />
+                <InputText id="tabelname" v-model= props.tabelName aria-describedby="username-help" disabled="true"/>
             </div>
             <div class="flex flex-column gap-2 my-3">
-                <label for="desc">Desc</label>
-                <InputText id="desc" v-model="kolom.desc" aria-describedby="desc-help" />
+                <label for="name">Kolom Name</label>
+                <InputText id="name" v-model="kolom.kol_name" aria-describedby="desc-help" />
             </div>
-            <div class="flex flex-column gap-2 my-3 mb-1">
+            <div class="flex flex-column gap-2 my-3">
+                <label for="tipe">Kolom Tipe</label>
+                <!-- <InputText id="tipe" v-model="kolom.kol_tipe" aria-describedby="desc-help" /> -->
+                <Dropdown id="tipe" v-model="kolom.kol_tipe" :options="tipes" placeholder="-Pilih-" class="w-full" />
+            </div>
+            <div class="flex flex-column gap-2 my-3">
+                <label for="unique">Kolom Unique</label>
+                <!-- <InputText id="desc" v-model="kolom.kol_unique" aria-describedby="desc-help" /> -->
+                <Dropdown id="unique" v-model="kolom.kol_unique" :options="uniques" placeholder="-Pilih-" class="w-full" />
+            </div>
+            <div class="flex flex-column gap-2 my-3">
+                <label for="default">Kolom Default</label>
+                <InputText id="default" v-model="kolom.kol_default" aria-describedby="desc-help" />
+            </div>
+            <!-- <div class="flex flex-column gap-2 my-3 mb-1">
                 <label for="priv">Priv</label>
                 <Dropdown id="priv" v-model="kolom.priv" :options="privs" placeholder="Priv" class="w-full" />
-            </div>
+            </div> -->
             
             <div class="flex align-items-center gap-3">
                 <Button label="Submit" type="submit">Create</Button>
@@ -25,21 +39,52 @@
 
 <script setup>
 import { reactive,ref } from 'vue';
+import custumFetch from '@/api';
 
+import Button from 'primevue/button'
 const props = defineProps(['tabelName'])
+const emit = defineEmits(["close"])
 
 const kolom = reactive({
-    name: "",
-    desc: "",
-    priv: "",
-    userId: "",
-    owner: ""
+    tabel: "",
+    kol_name: "",
+    kol_tipe: "",
+    kol_unique: "",
+    kol_default:"",
+    owner: "",
 
 })
-const privs = ref([
-    "Private", "Public", "All"
-]);
-const handleSubmit=()=>{
-alert(props.tabelName)
+const uniques = ref(["Yes", "No"]);
+const tipes = ref(["String", "Number","Boolean","Character"]);
+const handleSubmit= async()=>{
+alert(kolom.desc)
+try {
+        const Kolom = await custumFetch.post('/dev/tabelkolom', {
+            tabel: props.tabelName,
+            kol_name: kolom.kol_name,
+            kol_tipe: kolom.kol_tipe,
+            kol_unique : kolom.kol_unique,            
+            kol_default :kolom.kol_default
+
+        })
+        if (Kolom) {
+            alert("input sukses")
+            clerInput()
+            emit('close')
+            // emit('reload')
+        }
+    } catch (error) {
+        console.log(error)
+        // errorAlert.value = true;
+        errorMsg.value = error.response.data.message;
+    }
+}
+
+const clerInput =()=>{
+    kolom.tabel= "",
+    kolom.kol_name= "",
+    kolom.kol_tipe= "",
+    kolom.kol_unique = "",            
+    kolom.kol_default =""
 }
 </script>

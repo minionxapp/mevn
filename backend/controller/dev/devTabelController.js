@@ -1,11 +1,11 @@
 import DevTabel from "../../models/dev/DevTabel.js";
-import asynchHandler from "../../middleware/asyncHandler.js";
+import asyncHandler from "../../middleware/asyncHandler.js";
 
 
-export const createDevTable = asynchHandler(async(req,res)=>{
+export const createDevTable = asyncHandler(async(req,res)=>{
     const { name, desc, priv } = req.body
 
-    const oldTable = await DevTabel.findOne({      
+    const oldTable = await DevTabel.findOne({       
         name: name
     }) 
 
@@ -28,4 +28,14 @@ export const createDevTable = asynchHandler(async(req,res)=>{
             
         })
     }
+})
+
+//get all tabel
+export const getAllTabels = asyncHandler(async (req, res) => {
+    const allDevTabels = await DevTabel.find()
+    return res.status(200).json({
+        message: "Data seluruh tabel berhasil di tampilkan ",
+        data: allDevTabels
+    })
+
 })
