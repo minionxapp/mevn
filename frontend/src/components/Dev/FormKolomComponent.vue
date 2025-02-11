@@ -7,6 +7,10 @@
                 <InputText id="tabelname" v-model= props.tabelName aria-describedby="username-help" disabled="true"/>
             </div>
             <div class="flex flex-column gap-2 my-3">
+                <label for="default">TabelId</label>
+                <InputText id="tabelId" v-model=props.tabelId aria-describedby="desc-help" disabled="true"/>
+            </div>
+            <div class="flex flex-column gap-2 my-3">
                 <label for="name">Kolom Name</label>
                 <InputText id="name" v-model="kolom.kol_name" aria-describedby="desc-help" />
             </div>
@@ -34,7 +38,7 @@
             </div>
         </form>
     <!-- </Dialog> -->
-
+<!-- {{ props.tabelId }} -->
 </template>
 
 <script setup>
@@ -42,7 +46,7 @@ import { reactive,ref } from 'vue';
 import custumFetch from '@/api';
 
 import Button from 'primevue/button'
-const props = defineProps(['tabelName'])
+const props = defineProps(['tabelName','tabelId'])
 const emit = defineEmits(["close"])
 
 const kolom = reactive({
@@ -51,20 +55,21 @@ const kolom = reactive({
     kol_tipe: "",
     kol_unique: "",
     kol_default:"",
+    kol_tabelId:"",
     owner: "",
 
 })
 const uniques = ref(["Yes", "No"]);
 const tipes = ref(["String", "Number","Boolean","Character"]);
 const handleSubmit= async()=>{
-alert(kolom.desc)
 try {
         const Kolom = await custumFetch.post('/dev/tabelkolom', {
             tabel: props.tabelName,
             kol_name: kolom.kol_name,
             kol_tipe: kolom.kol_tipe,
             kol_unique : kolom.kol_unique,            
-            kol_default :kolom.kol_default
+            kol_default :kolom.kol_default,
+            kol_tabelId :props.tabelId
 
         })
         if (Kolom) {

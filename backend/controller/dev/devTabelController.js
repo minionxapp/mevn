@@ -1,5 +1,6 @@
 import DevTabel from "../../models/dev/DevTabel.js";
 import asyncHandler from "../../middleware/asyncHandler.js";
+import DevTabelKolom from "../../models/dev/DevTabelKolom.js"
 
 
 export const createDevTable = asyncHandler(async(req,res)=>{
@@ -10,7 +11,6 @@ export const createDevTable = asyncHandler(async(req,res)=>{
     }) 
 
     if(!oldTable){
-
         const newDevTabel = await DevTabel.create({
             name, 
             desc, 
@@ -37,5 +37,15 @@ export const getAllTabels = asyncHandler(async (req, res) => {
         message: "Data seluruh tabel berhasil di tampilkan ",
         data: allDevTabels
     })
+})
 
+export const getKolomByTabelId = asyncHandler(async (req, res) => {
+    // console.log(req.params.id)
+    // console.log("kkkkkkkkkkkk")
+    const data = await DevTabelKolom.find({tabel:req.params.id})
+    // console.log(data)
+    return res.status(200).json({
+        message: "Data seluruh tabel berhasil di tampilkan ",
+        data: data
+    })
 })
