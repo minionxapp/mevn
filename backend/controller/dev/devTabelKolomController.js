@@ -17,4 +17,29 @@ export const createDevTabelKolom= asynchHandler(async(req,res)=>{
         data: newDevTabel
     })
 
+
+
+})
+
+export const DeleteKolom = asynchHandler(async (req, res) => {
+    //format id harus seuai dengan format ObjectId pad mongoo
+    const idParam = req.params.id
+    console.log("id param "+idParam)
+    // if(isValidObjectId(idParam)==false){
+    //     return res.status(404).json({
+    //         message: "Format Id salah"
+    //     })
+    // }
+    const detail = await DevTabelKolom.findById(idParam)
+    // console.log("detail "+detail)
+    const deleteData = await DevTabelKolom.findByIdAndDelete(idParam)
+    if (!detail|| deleteData===null) {
+        return res.status(404).json({
+            message: "Id Kolom tidak ditemukan"
+        })
+    }
+    // checkPermission(req.user, detailQuestion.userId, res)
+    return res.status(200).json({
+        message: "Delete Koloom berhasil"
+    })
 })
