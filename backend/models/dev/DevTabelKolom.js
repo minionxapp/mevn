@@ -21,6 +21,11 @@ const DevTabelKolomSchema = new mongoose.Schema({
         required :[true,"Uniq connot be empty"],
         unique:[false]
     },
+    kol_required : {
+        type :String,
+        // required :[true,"Name connot be empty"],
+        default:"required"
+    },
     kol_default : {
         type :String,
         required :[true,"Default connot be empty"],

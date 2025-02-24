@@ -110,6 +110,13 @@ const items = ref([
             command:()=>{
                 router.push({name:'Kolom'})
                 }
+            },
+            {
+            label:'CRUD',
+            icon:'pi pi-clone',
+            command:()=>{
+                router.push({name:'CreateCrud'})
+                }
             }
         ]
     }

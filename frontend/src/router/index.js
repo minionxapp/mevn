@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStores'
 import DevView from '../views/Dev/DevView.vue'
 import AboutView from '@/views/AboutView.vue'
 import DevKolomView from '@/views/Dev/DevKolomView.vue'
+import DevCreateCRUD from '@/views/Dev/DevCreateCRUD.vue'
 
 
 const router = createRouter({
@@ -37,6 +38,11 @@ const router = createRouter({
       path: '/devkolom',
       name: 'Kolom',
       component: DevKolomView,
+    },
+    {
+      path: '/devcreatecrude',
+      name: 'CreateCrud',
+      component: DevCreateCRUD,
     },
 
   ], 

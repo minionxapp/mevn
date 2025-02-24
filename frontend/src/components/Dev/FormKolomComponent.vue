@@ -28,10 +28,10 @@
                 <label for="default">Kolom Default</label>
                 <InputText id="default" v-model="kolom.kol_default" aria-describedby="desc-help" />
             </div>
-            <!-- <div class="flex flex-column gap-2 my-3 mb-1">
-                <label for="priv">Priv</label>
-                <Dropdown id="priv" v-model="kolom.priv" :options="privs" placeholder="Priv" class="w-full" />
-            </div> -->
+            <div class="flex flex-column gap-2 my-3">
+                <label for="unique">Kolom Unique</label>
+                <Dropdown id="required" v-model="kolom.kol_required" :options="uniques" placeholder="-Pilih-" class="w-full" />
+            </div>
             
             <div class="flex align-items-center gap-3">
                 <Button label="Submit" type="submit">Create</Button>
@@ -47,7 +47,7 @@ import custumFetch from '@/api';
 
 import Button from 'primevue/button'
 const props = defineProps(['tabelName','tabelId'])
-const emit = defineEmits(["close"])
+const emit = defineEmits(["close","showKolom"])
 
 const kolom = reactive({
     tabel: "",
@@ -56,10 +56,11 @@ const kolom = reactive({
     kol_unique: "",
     kol_default:"",
     kol_tabelId:"",
+    kol_required:"",
     owner: "",
 
 })
-const uniques = ref(["Yes", "No"]);
+const uniques = ref(["True", "False"]);
 const tipes = ref(["String", "Number","Boolean","Character"]);
 const handleSubmit= async()=>{
 try {
@@ -69,14 +70,15 @@ try {
             kol_tipe: kolom.kol_tipe,
             kol_unique : kolom.kol_unique,            
             kol_default :kolom.kol_default,
-            kol_tabelId :props.tabelId
+            kol_tabelId :props.tabelId,
+            kol_required:kolom.kol_required
 
         })
         if (Kolom) {
             alert("input sukses")
             clerInput()
+            emit('showKolom')
             emit('close')
-            // emit('reload')
         }
     } catch (error) {
         console.log(error)
@@ -90,6 +92,7 @@ const clerInput =()=>{
     kolom.kol_name= "",
     kolom.kol_tipe= "",
     kolom.kol_unique = "",            
-    kolom.kol_default =""
+    kolom.kol_default ="",
+    kolom.kol_required=""
 }
 </script>

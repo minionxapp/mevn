@@ -1,0 +1,24 @@
+
+import mongoose, { Schema } from "mongoose";
+const kelasTabelSchema = new mongoose.Schema({
+    nama: {
+        type: String,
+        required: [false, "nama connot be empty"],
+        unique: [true, "nama Sudah ada"]
+    },
+    keterangan: {
+        type: String,
+        required: [false, "keterangan connot be empty"],
+        unique: [false, "keterangan Sudah ada"]
+    },
+    level: {
+        type: Number,
+        required: [false, "level connot be empty"],
+        unique: [false, "level Sudah ada"]
+    },
+},
+    {
+        timestamps: true
+    })
+const kelasTabel = mongoose.model("kelas", kelasTabelSchema)
+export default kelasTabel
