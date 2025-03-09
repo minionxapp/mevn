@@ -22,7 +22,11 @@ export const createModel = async (req, res) => {
             element.kol_name + ' connot be empty"],\n' + 'unique:[' + lowerCase(element.kol_unique) + ',"' + element.kol_name + ' Sudah ada"]\n},\n'
 
     }
-    script = script + '},\n{\n    timestamps :true\n})\nconst ' + tabelName + 'Tabel = mongoose.model("' + tabelName + '",' + tabelName + 'TabelSchema)\n' +
+    script = script + ' userId :{\n'+
+        'type :Schema.Types.ObjectId,\n'+
+        'ref :\'User\',\n'+
+        'required : [true,"UserId harus diisi"]\n'+
+    '}},'+'\n{\n    timestamps :true\n})\nconst ' + tabelName + 'Tabel = mongoose.model("' + tabelName + '",' + tabelName + 'TabelSchema)\n' +
         'export default ' + tabelName + 'Tabel'
     res.send(script)
 }
@@ -77,7 +81,7 @@ export const createController = async (req, res) => {
         const element = Koloms[i];
         controllerScript = controllerScript + element.kol_name + ',\n'
     }
-    controllerScript = controllerScript + '})\n' +
+    controllerScript = controllerScript + 'userId: req.user._id})\n' +
         'return res.status(200).json({\n' +
         'message: "berhasil tambah data '+tabelName+'",\n'
     'data: new' + capitalize(tabelName) + '\n' +
@@ -91,7 +95,7 @@ export const createController = async (req, res) => {
         '}\n '
 
     controllerScript = controllerScript + '})\n'
-    console.log(controllerScript)
+    // console.log(controllerScript)
 
 
 
@@ -137,7 +141,7 @@ export const createController = async (req, res) => {
             'message: "Id pertanyaan tidak ditemukan"\n'+
         '})\n'+
     '}\n'+
-    '//checkPermission(req.user, detail'+capitalize(tabelName)+'.userId, res)\n'+
+    'checkPermission(req.user, detail'+capitalize(tabelName)+'.userId, res)\n'+
     'const delete'+capitalize(tabelName)+' = await '+capitalize(tabelName)+'.findByIdAndDelete(idParam)\n'+
     'return res.status(200).json({\n'+
         'message: "Delete '+tabelName+' berhasil"\n'+
@@ -162,7 +166,7 @@ export const createController = async (req, res) => {
         'throw new Error("Pertanyaan tidak ditemukan")\n'+
     '}\n'+
 
-    '//checkPermission(req.user, id'+capitalize(tabelName)+'.userId, res)\n'
+    'checkPermission(req.user, id'+capitalize(tabelName)+'.userId, res)\n'
 
     for (let i = 0; i < Koloms.length; i++) {
         const element = Koloms[i];

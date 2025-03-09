@@ -4,6 +4,7 @@ import User from '../models/User.js'
 export const authMiddleware =async(req,res,next) =>{
     let token;
     token = req.cookies.jwt
+    let decode;
 
     if(!token){
         return next(
@@ -12,14 +13,17 @@ export const authMiddleware =async(req,res,next) =>{
             })
         )
     }
+    
+    
 
-    let decode;
     try {
         decode = await jwt.verify(token, process.env.JWT_SECRET)
+        // console.log(decode)
     } catch (error) {
+        // console.log(error)
         return next(
             res.status(401).json({
-                message :"Token invalid"
+                message :"Session invalid/Expired"
             })
         )
     }

@@ -7,6 +7,8 @@ import AboutView from '@/views/AboutView.vue'
 import DevKolomView from '@/views/Dev/DevKolomView.vue'
 import DevCreateCRUD from '@/views/Dev/DevCreateCRUD.vue'
 
+import KelasView from '@/views/Kelas/KelasView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +45,14 @@ const router = createRouter({
       path: '/devcreatecrude',
       name: 'CreateCrud',
       component: DevCreateCRUD,
+    },
+    {
+      path: '/kelas',
+      name: 'Kelas',
+      component: KelasView,
+      meta :{
+        requiredAuth:true
+      }
     },
 
   ], 

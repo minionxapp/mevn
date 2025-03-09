@@ -12,7 +12,7 @@ const signToken = id=>{
 const cretaeSendToken =(user,statusCode,res) =>{
     const token = signToken(user.id)
     const cookieOption ={
-        expire :new Date(Date.now() + 6*24*60*60*1000 ),
+        expire :new Date(Date.now()-1000),// 1*24*60*60*1000 ),
         httpOnly : true,
         security : false
     }

@@ -16,6 +16,11 @@ const kelasTabelSchema = new mongoose.Schema({
         required: [false, "level connot be empty"],
         unique: [false, "level Sudah ada"]
     },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, "UserId harus diisi"]
+    }
 },
     {
         timestamps: true

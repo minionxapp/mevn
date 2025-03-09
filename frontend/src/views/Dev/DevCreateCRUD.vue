@@ -16,8 +16,8 @@
         </Card>
         <TabView>
             <TabPanel header="Kolom">
-                <p class="m-0">
                 <h1>Tabel Name :{{ tabelName }}</h1>
+                <!-- <p class="m-0"> -->
                 {{ tabelKoloms.value }}
 
                 <DataTable :value="tabelKoloms" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -37,7 +37,7 @@
                     <Column field="kol_default" header="Default" style="width: 10%"></Column>
 
                 </DataTable>
-                </p>
+                <!-- </p> -->
             </TabPanel>
             <TabPanel header="Model">
                 <h1>{{ tabelName }} Model</h1>

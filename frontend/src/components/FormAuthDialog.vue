@@ -86,7 +86,6 @@ const isLogin = ref(true)
 const handleSubmit = () => {
     if(isLogin.value==true){
         LoginUser(userInput)
-        console.log("Click")
     }else{
         RegisterUser(userInput)
         clearInput()

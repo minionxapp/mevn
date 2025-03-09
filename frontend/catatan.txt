@@ -27,3 +27,7 @@ git push -u origin main
 git remote add origin https://github.com/minionxapp/mevn.git
 git branch -M main
 git push -u origin main
+
+bila npm run dev already use
+sudo lsof -i :3000
+kill -9 <PID>

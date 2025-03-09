@@ -117,6 +117,13 @@ const items = ref([
             command:()=>{
                 router.push({name:'CreateCrud'})
                 }
+            },
+            {
+            label:'Kelas',
+            icon:'pi pi-clone',
+            command:()=>{
+                router.push({name:'Kelas'})
+                }
             }
         ]
     }

@@ -7,11 +7,11 @@ export const useAuthStore = defineStore('user', () => {
     const dialog = ref(false)
     const errorMsg = ref(null)
     const errorAlert = ref(false)
+    const router = useRouter()
 
     const currentUser = ref(localStorage.getItem("user")
         ? JSON.parse(localStorage.getItem("user")) : null)
 
-        const router = useRouter()
 
 
     const LoginUser = async (inputData) => {

@@ -1,4 +1,4 @@
-<template>
+<template> 
   <main>
     <div class="grid">
       <aside class="col-2">

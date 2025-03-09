@@ -20,6 +20,7 @@ export const CreateKelas = asyncHandler(async (req, res) => {
             nama,
             keterangan,
             level,
+            userId: req.user._id
         })
         return res.status(200).json({
             message: "berhasil tambah data kelas",
@@ -40,9 +41,9 @@ export const GetAllKelas = asyncHandler(async (req, res) => {
 })
 
 export const GetKelasId = asyncHandler(async (req, res) => {
+    console.log("GetKelasId")
     const idParam = req.params.id
     const detailKelas = await Kelas.findById(idParam)
-    // console.log("disini ..detailKelas.."+detailKelas)
     if (!detailKelas) {
         return res.status(404).json({
             message: "Id Kelas tidak ditemukan"
@@ -53,6 +54,23 @@ export const GetKelasId = asyncHandler(async (req, res) => {
         data: detailKelas
     })
 })
+
+export const GetKelasByName = asyncHandler(async (req, res) => {
+    console.log("GetKelasByName")
+    const kelas = req.params.kelas
+    const detailKelas = await Kelas.find
+    ({ nama: {$regex:kelas} })
+    if (!detailKelas) {
+        return res.status(404).json({
+            message: "Id Kelas tidak ditemukan"
+        })
+    }
+    return res.status(200).json({
+        message: "Document Id kelas berhasil di temukan",
+        data: detailKelas
+    })
+})
+
 
 export const DeleteKelas = asyncHandler(async (req, res) => {
     //format id harus seuai dengan format ObjectId pad mongoo
@@ -68,10 +86,10 @@ export const DeleteKelas = asyncHandler(async (req, res) => {
             message: "Id pertanyaan tidak ditemukan"
         })
     }
-    checkPermission(req.user, detailKelas.userId, res)
+    //checkPermission(req.user, detailKelas.userId, res)
     const deleteKelas = await Kelas.findByIdAndDelete(idParam)
     return res.status(200).json({
-        message: "Delete pertanyaan berhasil"
+        message: "Delete kelas berhasil"
     })
 })
 
@@ -90,7 +108,7 @@ export const UpdateKelas = asyncHandler(async (req, res) => {
     idKelas.level = level
     await idKelas.save()
     return res.status(200).json({
-        message: "Berhasil update pertanyaan",
+        message: "Berhasil update kelas",
         data: idKelas
     })
 })

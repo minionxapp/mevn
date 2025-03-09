@@ -1,7 +1,7 @@
 <template>
     <div class="card my-2">
 
-    </div>
+    </div> 
     <Panel>
         <template #header>
             <div class="flex align-items-center gap-2">
@@ -27,7 +27,7 @@
         <Chip :label="props.data.category" />
     </Panel>
 
-
+<!-- {{ data }} -->
 </template>
 
 <script setup>

@@ -13,7 +13,7 @@ import Button from 'primevue/button'
 import Editor from 'primevue/editor';
 import Dropdown from 'primevue/dropdown';
 
-
+import ConfirmationService from 'primevue/confirmationservice';
 
 import { createPinia } from 'pinia';
 
@@ -28,7 +28,7 @@ const pinia = createPinia()
 app.use(PrimeVue)
 app.use(router)
 app.use(pinia)
-
+app.use(ConfirmationService);
 pinia.use(({store})=>{
     store.ro
 })
