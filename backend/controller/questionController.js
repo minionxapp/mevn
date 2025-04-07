@@ -87,13 +87,16 @@ export const DeleteQuestion = asyncHandler(async (req, res) => {
         })
     }
     const detailQuestion = await Question.findById(idParam)
-    if (!detailQuestion || deleteQuestion===null) {
+
+    if (!detailQuestion ===null) {
         return res.status(404).json({
             message: "Id pertanyaan tidak ditemukan"
         })
     }
     checkPermission(req.user, detailQuestion.userId, res)
+
     const deleteQuestion = await Question.findByIdAndDelete(idParam)
+    console.log(deleteQuestion)
     return res.status(200).json({
         message: "Delete pertanyaan berhasil"
     })

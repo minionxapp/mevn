@@ -1,21 +1,21 @@
 import express from 'express';
-import { authMiddleware, permissionUser } from '../middleware/authMiddleware.js';
-import { CreateKelas, GetAllKelas, GetKelasId, DeleteKelas, UpdateKelas, testKelas,GetKelasByName } from '../controller/kelasController.js';
+ import {authMiddleware,permissionUser} from '../middleware/authMiddleware.js';  
+import  {CreateKelas,GetAllKelas,GetKelasId,DeleteKelas,UpdateKelas,testKelas} from '../controller/kelasController.js';
 const router = express.Router();
 
-router.post('/', authMiddleware, permissionUser("admin"), CreateKelas);
-router.get('/', authMiddleware, permissionUser("admin"), GetAllKelas);
-router.get('/testkelas', testKelas);
-router.get('/carikelas/:kelas', GetKelasByName);
-router.get('/:id', authMiddleware, permissionUser("admin"), GetKelasId);
-router.delete('/:id', authMiddleware, permissionUser("admin"), DeleteKelas);
-router.put('/:id', authMiddleware, permissionUser("admin"), UpdateKelas);
+router.post('/',authMiddleware,permissionUser("admin"),CreateKelas);
+router.get('/',authMiddleware,permissionUser("admin"),GetAllKelas);
+router.get('/testkelas',testKelas);
+
+router.get('/:id',authMiddleware,permissionUser("admin"),GetKelasId);
+router.delete('/:id',authMiddleware,permissionUser("admin"),DeleteKelas);
+router.put('/:id',authMiddleware,permissionUser("admin"),UpdateKelas);
 export default router;
 
 
 
 //tambahkan pada app.js
-/*
+ /*
 import kelasRouter from './router/kelasRouter.js';
 app.use('/api/v1/kelas',kelasRouter);
 */

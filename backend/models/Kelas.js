@@ -4,7 +4,7 @@ const kelasTabelSchema = new mongoose.Schema({
     nama: {
         type: String,
         required: [false, "nama connot be empty"],
-        unique: [true, "nama Sudah ada"]
+        unique: [false, "nama Sudah ada"]
     },
     keterangan: {
         type: String,
@@ -15,6 +15,11 @@ const kelasTabelSchema = new mongoose.Schema({
         type: Number,
         required: [false, "level connot be empty"],
         unique: [false, "level Sudah ada"]
+    },
+    tgllahir: {
+        type: Date,
+        required: [false, "tgllahir connot be empty"],
+        unique: [false, "tgllahir Sudah ada"]
     },
     userId: {
         type: Schema.Types.ObjectId,

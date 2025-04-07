@@ -47,9 +47,9 @@ const questions = ref(null)
 const allQuestions = async()=>{
   try {
     const { data } = await custumFetch.get("/question") 
-    console.log(data.data)
+    // console.log(data.data)
     questions.value= data.data
-  } catch (error) {
+  } catch (error) { 
     console.log(error)
   }
 }

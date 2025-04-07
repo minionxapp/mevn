@@ -16,6 +16,8 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import { errorHandler,notFound } from './middleware/errorHandler.js'
 
+import myasetRouter from './router/myasetRouter.js';
+
 dotenv.config()
 export const app = express()
 const port = 3000
@@ -41,6 +43,7 @@ app.use('/api/v1/question',questionRouter)
 app.use('/api/v1/role',roleRouter)
 app.use('/api/v1/kelas',kelasRouter);
 
+app.use('/api/v1/myaset',myasetRouter);
 app.use(notFound)
 app.use(errorHandler)
 

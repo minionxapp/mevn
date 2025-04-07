@@ -56,15 +56,27 @@ export const createController = async (req, res) => {
     }
 
     controllerScript = controllerScript + '} = req.body;\n\n'
+// unutk tabel yang mengandung unique kolom, unutk yang tidak mengandung unique kolom pikirkan lagi
+let cekUniq = false
+for (let i = 0; i < Koloms.length; i++) {
+    const element = Koloms[i];
+    if (element.kol_unique == 'True') {
+        cekUniq = true
+        i = Koloms.length
+        
+    }
+}
+console.log(cekUniq)
+if(cekUniq==true){
 
     for (let i = 0; i < Koloms.length; i++) {
         const element = Koloms[i];
         if (element.kol_unique == 'True') {
             controllerScript = controllerScript + 'const  old' + capitalize(element.kol_name) + '= await ' + capitalize(tabelName) + '.findOne({\n' +
-                element.kol_name + ':' + element.kol_name + '\n});\n'
+            element.kol_name + ':' + element.kol_name + '\n});\n'
         }
     }
-
+    
     controllerScript = controllerScript + 'if('
     for (let i = 0; i < Koloms.length; i++) {
         const element = Koloms[i];
@@ -74,33 +86,47 @@ export const createController = async (req, res) => {
             controllerScript = controllerScript + 'if(' + '!old' + capitalize(element.kol_name) + ' || '
         }
     }
-
+    
     controllerScript = controllerScript + '){\n' +
-        ' const new' + capitalize(tabelName) + ' = await ' + capitalize(tabelName) + '.create({\n'
+    ' const new' + capitalize(tabelName) + ' = await ' + capitalize(tabelName) + '.create({\n'
     for (let i = 0; i < Koloms.length; i++) {
         const element = Koloms[i];
         controllerScript = controllerScript + element.kol_name + ',\n'
     }
     controllerScript = controllerScript + 'userId: req.user._id})\n' +
-        'return res.status(200).json({\n' +
-        'message: "berhasil tambah data '+tabelName+'",\n'
+    'return res.status(200).json({\n' +
+    'message: "berhasil tambah data '+tabelName+'",\n'
     'data: new' + capitalize(tabelName) + '\n' +
-        '})\n'
-
-
+    '})\n'
+    
+    
     controllerScript = controllerScript + '}\n)\n}else\n{\n'
-
+    
     controllerScript = controllerScript +
-        'return res.status(401).json({ \nmessage: "Data sudah ada",\n})' +
-        '}\n '
-
+    'return res.status(401).json({ \nmessage: "Data sudah ada",\n})' +
+    '}\n '
+    
+}else{
+    controllerScript= controllerScript +'//TIDAK ADA UNIQ COLUMN...............\n'+
+    ' const new' + capitalize(tabelName) + ' = await ' + capitalize(tabelName) + '.create({\n'
+    for (let i = 0; i < Koloms.length; i++) {
+        const element = Koloms[i];
+        controllerScript = controllerScript + element.kol_name + ',\n'
+    }
+    controllerScript = controllerScript + 'userId: req.user._id})\n' +
+    'return res.status(200).json({\n' +
+    'message: "berhasil tambah data '+tabelName+'",\n'+
+    'data: new' + capitalize(tabelName) + '\n' +
+    '})\n'
+    
+}
     controllerScript = controllerScript + '})\n'
     // console.log(controllerScript)
 
 
 
     // lajut ke Getall
-    controllerScript = controllerScript + 'export const GetAll' + capitalize(tabelName) + ' = asyncHandler(async (req, res) => {\n'+
+    controllerScript = controllerScript + '\n\nexport const GetAll' + capitalize(tabelName) + ' = asyncHandler(async (req, res) => {\n'+
     ' const '+capitalize(tabelName)+'Data = await '+capitalize(tabelName)+'.find()\n'+
     'return res.status(200).json({\n'+
         'message: "Data '+capitalize(tabelName)+' berhasil di tampilkan semua",\n'+
@@ -125,6 +151,47 @@ export const createController = async (req, res) => {
     '})\n'
 
      controllerScript = controllerScript + '})\n\n'
+
+
+     //buatkan unutk mebcari berdasarkan name
+     controllerScript = controllerScript +
+     'export const Get'+capitalize(tabelName)+'ByName = asyncHandler(async (req, res) => {\n'+
+     '//Untuk disesuaikan pencariannya\n'+
+     '/*const '+tabelName+' = req.params.'+tabelName+'\n'+
+     'const detail'+capitalize(tabelName)+' = await '+capitalize(tabelName)+'.find\n'+
+    '({ nama: {$regex:'+tabelName+'} })\n'+
+    'if (!detail'+capitalize(tabelName)+') {\n'+
+        'return res.status(404).json({\n'+
+            'message: "'+capitalize(tabelName)+' tidak ditemukan"\n'+
+        '})\n'+
+    '}\n'+
+    'return res.status(200).json({\n'+
+        'message: "Document '+capitalize(tabelName)+' berhasil di temukan", \n'+
+        'data: detail'+capitalize(tabelName)+'\n'+
+    '})\n*/'+
+     '})\n'
+/*
+export const GetKelasByName = asyncHandler(async (req, res) => {
+    console.log("GetKelasByName")
+    const kelas = req.params.kelas
+    const detailKelas = await Kelas.find
+    ({ nama: {$regex:kelas} })
+    if (!detailKelas) {
+        return res.status(404).json({
+            message: "Id Kelas tidak ditemukan"
+        })
+    }
+    return res.status(200).json({
+        message: "Document Id kelas berhasil di temukan", 
+        data: detailKelas
+    })
+})
+
+
+*/
+
+
+
 
     // lajut ke Delete
      controllerScript = controllerScript + 'export const Delete' + capitalize(tabelName) + ' = asyncHandler(async (req, res) => {\n'+

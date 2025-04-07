@@ -29,7 +29,7 @@
                 <InputText id="default" v-model="kolom.kol_default" aria-describedby="desc-help" />
             </div>
             <div class="flex flex-column gap-2 my-3">
-                <label for="unique">Kolom Unique</label>
+                <label for="unique">Kolom Required</label>
                 <Dropdown id="required" v-model="kolom.kol_required" :options="uniques" placeholder="-Pilih-" class="w-full" />
             </div>
             
@@ -61,7 +61,7 @@ const kolom = reactive({
 
 })
 const uniques = ref(["True", "False"]);
-const tipes = ref(["String", "Number","Boolean","Character"]);
+const tipes = ref(["String", "Number","Boolean","Character","Date","Datetime"]);
 const handleSubmit= async()=>{
 try {
         const Kolom = await custumFetch.post('/dev/tabelkolom', {
