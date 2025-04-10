@@ -16,7 +16,7 @@ export default defineConfig({
       
       // '/foo': 'http://localhost:4567',
       '/api': {
-        target: 'http://localhost:3000/api',
+        target: 'https://backendmevn.vercel.app/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
