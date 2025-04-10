@@ -47,6 +47,14 @@ const router = createRouter({
                     meta :{
                         requiredAuth:true
                       }
+                },
+                {
+                    path: '/category',
+                    name: 'category',
+                    component: () => import('@/views/admin/CategoryView.vue'),
+                    meta :{
+                        requiredAuth:true
+                      }
                 }
             ]
         },

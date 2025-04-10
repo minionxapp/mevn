@@ -184,8 +184,6 @@ const formatDate = (value) => {
             <Toolbar class="mb-6">
                 <template #start>
                     <Button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" @click="openNew" />
-                    <!-- <Button label="Delete" icon="pi pi-trash" severity="secondary" @click="confirmDeleteSelected"
-                        :disabled="!selectedMyasets || !selectedMyasets.length" /> -->
                 </template>
 
                 <template #end>
@@ -246,23 +244,20 @@ const formatDate = (value) => {
                     <small v-if="submitted && !myaset.name" class="text-red-500">Name is required.</small>
                 </div>
                 <div>
+                    <label for="category" class="block font-bold mb-3">Category</label>
+                    <Select id="category" v-model.trim="myaset.category" :options="categories" optionLabel="label"
+                        optionValue="value" placeholder="Select a Category" fluid></Select>
+                </div>
+                <div>
                     <label for="description" class="block font-bold mb-3">Description</label>
                     <Textarea id="description" v-model="myaset.description" required="true" rows="3" cols="20" fluid />
                 </div>
             </div>
-
             <div>
                 <label for="tgl" class="block font-bold mb-3">Tanggal</label>
                 <DatePicker id="tgl" v-model.trim="myaset.tgl" required="true" :invalid="submitted && !myaset.tgl"
                     fluid />
                 <small v-if="submitted && !myaset.tgl" class="text-red-500">Tanggal is required.</small>
-            </div>
-
-
-            <div>
-                <label for="category" class="block font-bold mb-3">Category</label>
-                <Select id="category" v-model.trim="myaset.category" :options="categories" optionLabel="label"
-                    optionValue="value" placeholder="Select a Category" fluid></Select>
             </div>
             <template #footer>
                 <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />

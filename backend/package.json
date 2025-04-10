@@ -7,7 +7,8 @@
     "test": "jest --runInBand --force-exit",
     "server": "nodemon app.js",
     "client": "npm run dev  --prefix ../frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "sakai" :"npm run dev  --prefix ../my-sakai",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run sakai\""
   },
   "jest": {
     "transform": {

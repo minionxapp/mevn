@@ -17,7 +17,7 @@ import morgan from 'morgan'
 import { errorHandler,notFound } from './middleware/errorHandler.js'
 
 import myasetRouter from './router/myasetRouter.js';
-
+import categoryRouter from './router/categoryRouter.js';
 dotenv.config()
 export const app = express()
 const port = 3000
@@ -32,7 +32,7 @@ if(process.env.NODE_Env ==='development'){
   app.use(morgan('dev'))
 }
 
-
+  
 
 
 
@@ -44,12 +44,15 @@ app.use('/api/v1/role',roleRouter)
 app.use('/api/v1/kelas',kelasRouter);
 
 app.use('/api/v1/myaset',myasetRouter);
+
+app.use('/api/v1/category',categoryRouter);
+
 app.use(notFound)
 app.use(errorHandler)
 
 
 app.listen(port, () => {
-  console.log(`aplikasi jalan pada port port : ${port}`)
+  console.log(`aplikasi jalan pada port porti : ${port}`)
 })
 
 // connection db
