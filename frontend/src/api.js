@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const custumFetch = axios.create({
-    baseURL :'/api/v1'
+    baseURL :'https://backendmevn.vercel.app/api/v1'
 
 })
 
