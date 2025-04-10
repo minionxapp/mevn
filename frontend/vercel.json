@@ -5,7 +5,7 @@
             "destination" : "https://backendmevn.vercel.app/api/:path"
         },
         {
-            "source" : "/s(.*)",
+            "source" : "/(.*)",
             "destination" : "/index.html"
         }
     ]
